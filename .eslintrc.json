@@ -24,12 +24,10 @@
           }
         ],
         "@angular-eslint/component-selector": [
-          "error",
-          {
-            "type": "element",
-            "prefix": "app",
-            "style": "kebab-case"
-          }
+          "off"
+        ],
+        "@typescript-eslint/no-array-constructor": [
+          "off"
         ]
       }
     },

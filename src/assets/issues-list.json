@@ -1,0 +1,46 @@
+[
+  {
+    "id": "1",
+    "title": "Example issue",
+    "text": "This is a description of the item, it might describe a bug/task/comment, it can also display <a href='www.google.com'>Links</a>",
+    "tags": [
+      "issue",
+      "example"
+    ]
+  },
+  {
+    "id": "2",
+    "title": "Bolt text style",
+    "text": "Is is possible to add <strong>bold style to text</strong>?",
+    "tags": [
+      "question",
+      "enhancement"
+    ]
+  },
+  {
+    "id": "3",
+    "title": "New bug found",
+    "text": "Detailed bug description <br> Screenshots: <br> Actual result: 1 <br> Expected result: 2",
+    "tags": [
+      "issue",
+      "bug"
+    ]
+  },
+  {
+    "id": "4",
+    "title": "Question",
+    "text": "How to do something?",
+    "tags": [
+      "question"
+    ]
+  },
+  {
+    "id": "5",
+    "title": "HTML List example",
+    "text": "Example of the list: <br> <ul><li>item 1</li><li>item 2</li><li>item 3</li></ul>",
+    "tags": [
+      "issue",
+      "example"
+    ]
+  }
+]

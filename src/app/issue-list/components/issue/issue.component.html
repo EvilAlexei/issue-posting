@@ -1,0 +1,77 @@
+<div class="card">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <h2 class="card-title mb-0">{{ issueCopy.title }}</h2>
+
+    <button [disabled]="isEditMode" [matMenuTriggerFor]="menu" mat-icon-button>
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button (click)="edit()" mat-menu-item>Edit</button>
+      <button (click)="delete()" mat-menu-item>Delete</button>
+    </mat-menu>
+  </div>
+
+  <ng-container *ngIf="isEditMode; else viewMode">
+    <form #form="ngForm">
+      <div class="card-body">
+        <mat-form-field>
+          <mat-label>Title:</mat-label>
+          <input [(ngModel)]="issueCopy.title" matInput name="issue-title" placeholder="Placeholder" />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Content:</mat-label>
+          <textarea [(ngModel)]="issueCopy.text" matInput name="issue-text" required></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Tags:</mat-label>
+          <mat-chip-grid #chipGrid>
+            <mat-chip-row (removed)="removeTag(tag)" *ngFor="let tag of issueCopy.tags; trackBy: trackByFn">
+              {{ tag }}
+              <button [attr.aria-label]="'remove ' + tag" matChipRemove>
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+          </mat-chip-grid>
+          <input
+            #tagInput
+            (matChipInputTokenEnd)="addTag($event)"
+            [matAutocomplete]="auto"
+            [matChipInputFor]="chipGrid"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            placeholder="New Tag..."
+          />
+          <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectTag($event)">
+            <mat-option *ngFor="let tag of tagsList; trackBy: trackByFn" [value]="tag">
+              {{ tag }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+
+      <div class="card-footer">
+        <div class="input-group d-flex justify-content-end">
+          <button (click)="cancel()" color="accent" mat-raised-button type="button">Cancel</button>
+          <button (click)="save()" [disabled]="form.invalid" color="primary" mat-raised-button type="submit">
+            Save
+          </button>
+        </div>
+      </div>
+    </form>
+  </ng-container>
+</div>
+
+<ng-template #viewMode>
+  <div class="card-body">
+    <p [innerHTML]="issue.text"></p>
+  </div>
+
+  <div class="card-footer">
+    <mat-chip-set>
+      <mat-chip *ngFor="let tag of issueCopy.tags; trackBy: trackByFn">
+        {{ tag }}
+      </mat-chip>
+    </mat-chip-set>
+  </div>
+</ng-template>
