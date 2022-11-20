@@ -14,6 +14,7 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatChipInputEvent } from '@angular/material/chips';
 
 import { Issue } from '../../models/issue.model';
+import { TagService } from '../../services/tag.service';
 
 @Component({
   selector: 'issue',
@@ -33,6 +34,8 @@ export class IssueComponent implements OnChanges {
   @Output() editIssue = new EventEmitter<Issue>();
 
   @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
+
+  constructor(private readonly tagService: TagService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if ('issue' in changes) {
@@ -63,28 +66,16 @@ export class IssueComponent implements OnChanges {
   }
 
   addTag(event: MatChipInputEvent): void {
-    const value = (event.value || '').trim();
-
-    if (value && !this.issueCopy.tags.includes(value)) {
-      this.issueCopy.tags.push(value.trim());
-    }
-
-    event.chipInput.clear();
+    this.issueCopy.tags = this.tagService.addTag(event, this.issueCopy.tags);
     this.tagInput.nativeElement.value = '';
   }
 
   removeTag(tag: string): void {
-    const index = this.issueCopy.tags.indexOf(tag);
-
-    if (index >= 0) {
-      this.issueCopy.tags.splice(index, 1);
-    }
+    this.issueCopy.tags = this.tagService.removeTag(tag, this.issueCopy.tags);
   }
 
   selectTag(event: MatAutocompleteSelectedEvent): void {
-    if (!this.issueCopy.tags.includes(event.option.viewValue)) {
-      this.issueCopy.tags.push(event.option.viewValue);
-    }
+    this.issueCopy.tags = this.tagService.selectTag(event, this.issueCopy.tags);
     this.tagInput.nativeElement.value = '';
   }
 }

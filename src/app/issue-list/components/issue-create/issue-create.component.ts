@@ -4,6 +4,7 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatChipInputEvent } from '@angular/material/chips';
 
 import { Issue } from '../../models/issue.model';
+import { TagService } from '../../services/tag.service';
 
 @Component({
   selector: 'issue-create',
@@ -21,6 +22,8 @@ export class IssueCreateComponent {
 
   @ViewChild('tagInput') tagInput!: ElementRef<HTMLInputElement>;
 
+  constructor(private readonly tagService: TagService) {}
+
   create(): void {
     this.createIssue.emit(this.newIssue);
     this.newIssue = new Issue();
@@ -35,28 +38,16 @@ export class IssueCreateComponent {
   }
 
   addTag(event: MatChipInputEvent): void {
-    const value = (event.value || '').trim();
-
-    if (value && !this.newIssue.tags.includes(value)) {
-      this.newIssue.tags.push(value.trim());
-    }
-
-    event.chipInput.clear();
+    this.newIssue.tags = this.tagService.addTag(event, this.newIssue.tags);
     this.tagInput.nativeElement.value = '';
   }
 
   removeTag(tag: string): void {
-    const index = this.newIssue.tags.indexOf(tag);
-
-    if (index >= 0) {
-      this.newIssue.tags.splice(index, 1);
-    }
+    this.newIssue.tags = this.tagService.removeTag(tag, this.newIssue.tags);
   }
 
   selectTag(event: MatAutocompleteSelectedEvent): void {
-    if (!this.newIssue.tags.includes(event.option.viewValue)) {
-      this.newIssue.tags.push(event.option.viewValue);
-    }
+    this.newIssue.tags = this.tagService.selectTag(event, this.newIssue.tags);
     this.tagInput.nativeElement.value = '';
   }
 }
