@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatChipListbox, MatChipListboxChange } from '@angular/material/chips';
-import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import { Issue } from './models/issue.model';
 import { ApiIssueListService } from './services/api-issue-list.service';
@@ -13,33 +13,33 @@ const cloneData = (data: any) => JSON.parse(JSON.stringify(data));
   templateUrl: './issue-list.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IssueListComponent implements OnInit {
+export class IssueListComponent implements OnInit, OnDestroy {
+  issueList$!: Subscription;
   issues: Issue[] = [];
   issuesCopy: Issue[] = [];
   tagsList!: Set<string>;
 
   @ViewChild('tagsFilter') tagsFilter!: MatChipListbox;
 
-  constructor(private readonly route: ActivatedRoute, private readonly apiIssueList: ApiIssueListService) {}
+  constructor(private readonly apiIssueList: ApiIssueListService) {}
 
   ngOnInit(): void {
-    this.issues = this.apiIssueList.resolveRouteParam(this.route.snapshot, 'issueList');
+    this.issueList$ = this.apiIssueList.issueList$.subscribe((data) => {
+      this.updateIssues(data);
+    });
 
-    if (this.issues.length) {
-      this.issuesCopy = cloneData(this.issues);
-      this.setUniqueTags(this.issuesCopy);
-    }
+    this.apiIssueList.getIssueList();
   }
 
   deleteIssue(id: string): void {
     this.issuesCopy = this.issuesCopy.filter((issue) => issue.id !== id);
-    this.apiIssueList.updateIssueList(this.issuesCopy).subscribe((data) => this.updateIssues(data));
+    this.apiIssueList.updateIssueList(this.issuesCopy);
   }
 
   editIssue(item: Issue): void {
     const index = this.issuesCopy.findIndex(({ id }) => id === item.id);
     this.issuesCopy[index] = item;
-    this.apiIssueList.updateIssueList(this.issuesCopy).subscribe((data) => this.updateIssues(data));
+    this.apiIssueList.updateIssueList(this.issuesCopy);
   }
 
   createIssue(item: Issue): void {
@@ -50,7 +50,7 @@ export class IssueListComponent implements OnInit {
         ...item,
         id: (lastId + 1).toString(),
       });
-      this.apiIssueList.updateIssueList(this.issuesCopy).subscribe((data) => this.updateIssues(data));
+      this.apiIssueList.updateIssueList(this.issuesCopy);
     }
   }
 
@@ -81,5 +81,9 @@ export class IssueListComponent implements OnInit {
   updateIssues(data: Issue[]): void {
     this.issues = this.issuesCopy = cloneData(data);
     this.setUniqueTags(this.issuesCopy);
+  }
+
+  ngOnDestroy() {
+    this.issueList$.unsubscribe();
   }
 }

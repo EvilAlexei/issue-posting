@@ -27,6 +27,7 @@ export class IssueCreateComponent {
   create(): void {
     this.createIssue.emit(this.newIssue);
     this.newIssue = new Issue();
+    this.tagInput.nativeElement.value = '';
   }
 
   cancel(): void {

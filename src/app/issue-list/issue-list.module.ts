@@ -14,7 +14,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { IssueCreateComponent } from './components/issue-create/issue-create.component';
 
 import { IssueComponent } from './components/issue/issue.component';
-import { IssueListRoutingModule } from './issue-list-routing.module';
 import { IssueListComponent } from './issue-list.component';
 
 @NgModule({
@@ -22,7 +21,6 @@ import { IssueListComponent } from './issue-list.component';
   imports: [
     CommonModule,
     FormsModule,
-    IssueListRoutingModule,
     MatMenuModule,
     MatIconModule,
     MatButtonModule,
