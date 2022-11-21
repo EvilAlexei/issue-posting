@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot } from '@angular/router';
-import { Observable, of, take } from 'rxjs';
+import { BehaviorSubject, Observable, of, take } from 'rxjs';
 
 import { Issue } from '../models/issue.model';
 
@@ -11,18 +10,18 @@ import { Issue } from '../models/issue.model';
 export class ApiIssueListService {
   private _jsonURL = 'assets/issues-list.json';
 
+  private issueListSubject = new BehaviorSubject<Issue[]>([]);
+  issueList$: Observable<Issue[]> = this.issueListSubject.asObservable();
+
   constructor(private readonly http: HttpClient) {}
 
-  getIssueList(): Observable<Issue[]> {
-    return this.http.get<Issue[]>(this._jsonURL);
+  getIssueList(): void {
+    this.http.get<Issue[]>(this._jsonURL).subscribe((data) => this.issueListSubject.next(data));
   }
 
-  updateIssueList(newList: Issue[]): Observable<Issue[]> {
-    return of(newList).pipe(take(1));
-  }
-
-  /* eslint-disable-next-line */
-  resolveRouteParam(snapshot: ActivatedRouteSnapshot, key: string): any {
-    return snapshot.data[key] || (snapshot.parent ? this.resolveRouteParam(snapshot.parent, key) : null);
+  updateIssueList(newList: Issue[]): void {
+    of(newList)
+      .pipe(take(1))
+      .subscribe((data) => this.issueListSubject.next(data));
   }
 }
